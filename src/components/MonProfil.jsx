@@ -67,10 +67,44 @@ const MonProfil = () => {
     }
   ];
 
+  const demandesPermutation = [
+    {
+      id: 1,
+      niveau: 'BTS 1',
+      filiere: 'Génie Informatique',
+      etablissementActuel: 'Grande école ASTC',
+      villeActuelle: 'Abidjan',
+      etablissementSouhaite: 'Université de Amérique',
+      villeSouhaitee: 'Abidjan',
+      anneeAcademique: '2024-2025',
+      dateCreation: '2024-01-15',
+      statut: 'En cours',
+      motif: 'Rapprochement familial et meilleure qualité d\'enseignement',
+      vues: 45,
+      correspondances: 3
+    },
+    {
+      id: 2,
+      niveau: 'Master 1',
+      filiere: 'Commerce',
+      etablissementActuel: 'Université Félix Houphouët Boigny',
+      villeActuelle: 'Abidjan',
+      etablissementSouhaite: 'Université de Strasbourg',
+      villeSouhaitee: 'Strasbourg, France',
+      anneeAcademique: '2024-2025',
+      dateCreation: '2024-01-12',
+      statut: 'En cours',
+      motif: 'Poursuite d\'études à l\'étranger pour spécialisation',
+      vues: 78,
+      correspondances: 1
+    }
+  ];
+
   const tabs = [
     { id: 'informations', label: 'Mes informations', icon: 'ph-user' },
     { id: 'dossiers', label: 'Mes dossiers', icon: 'ph-folder' },
     { id: 'bourses', label: 'Demandes de bourses', icon: 'ph-graduation-cap' },
+    { id: 'permutations', label: 'Mes permutations', icon: 'ph-arrows-clockwise' },
     { id: 'documents', label: 'Mes documents', icon: 'ph-file-text' },
     { id: 'parametres', label: 'Paramètres', icon: 'ph-gear' }
   ];
@@ -124,6 +158,10 @@ const MonProfil = () => {
                       <div className="stat-item">
                         <span className="stat-number">{demandesBourses.length}</span>
                         <span className="stat-label">Bourses</span>
+                      </div>
+                      <div className="stat-item">
+                        <span className="stat-number">{demandesPermutation.length}</span>
+                        <span className="stat-label">Permutations</span>
                       </div>
                     </div>
                   </div>
@@ -303,6 +341,102 @@ const MonProfil = () => {
           </div>
         );
 
+      case 'permutations':
+        return (
+          <div className="tab-content">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h5>Mes demandes de permutation</h5>
+              <Link href="/permutations" className="btn btn-orange">
+                <i className="ph-plus me-2"></i>
+                Nouvelle demande
+              </Link>
+            </div>
+            <div className="row">
+              {demandesPermutation.map(demande => (
+                <div key={demande.id} className="col-lg-6 mb-4">
+                  <div className="permutation-card">
+                    <div className="permutation-header">
+                      <div className="permutation-info">
+                        <h6 className="permutation-niveau">{demande.niveau}</h6>
+                        <p className="permutation-filiere">{demande.filiere}</p>
+                      </div>
+                      <div className="permutation-status">
+                        <span className={`badge ${getStatutBadge(demande.statut)}`}>
+                          <i className={`${getStatutIcon(demande.statut)} me-1`}></i>
+                          {demande.statut}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="permutation-path">
+                      <div className="path-item">
+                        <div className="path-dot"></div>
+                        <div className="path-content">
+                          <div className="path-label">Établissement actuel</div>
+                          <div className="path-value">{demande.etablissementActuel}</div>
+                          <div className="path-location">{demande.villeActuelle}</div>
+                        </div>
+                      </div>
+                      <div className="path-arrow">
+                        <i className="ph-arrow-right"></i>
+                      </div>
+                      <div className="path-item">
+                        <div className="path-dot"></div>
+                        <div className="path-content">
+                          <div className="path-label">Établissement souhaité</div>
+                          <div className="path-value">{demande.etablissementSouhaite}</div>
+                          <div className="path-location">{demande.villeSouhaitee}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="permutation-meta">
+                      <div className="meta-item">
+                        <i className="ph-calendar me-2"></i>
+                        <span>Créée le {new Date(demande.dateCreation).toLocaleDateString('fr-FR')}</span>
+                      </div>
+                      <div className="meta-item">
+                        <i className="ph-eye me-2"></i>
+                        <span>{demande.vues} vues</span>
+                      </div>
+                      <div className="meta-item">
+                        <i className="ph-users me-2"></i>
+                        <span>{demande.correspondances} correspondance{demande.correspondances > 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                    <div className="permutation-motif">
+                      <strong>Motif:</strong> {demande.motif}
+                    </div>
+                    <div className="permutation-actions">
+                      <button className="btn btn-sm btn-outline-orange">
+                        <i className="ph-eye me-1"></i>
+                        Voir détails
+                      </button>
+                      <button className="btn btn-sm btn-outline-secondary">
+                        <i className="ph-pencil me-1"></i>
+                        Modifier
+                      </button>
+                      <button className="btn btn-sm btn-outline-danger">
+                        <i className="ph-trash me-1"></i>
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {demandesPermutation.length === 0 && (
+              <div className="empty-state text-center py-5">
+                <i className="ph-arrows-clockwise display-4 text-muted mb-3"></i>
+                <h5>Aucune demande de permutation</h5>
+                <p className="text-muted">Vous n'avez pas encore fait de demande de permutation.</p>
+                <Link href="/permutations" className="btn btn-orange">
+                  <i className="ph-plus me-2"></i>
+                  Faire une demande
+                </Link>
+              </div>
+            )}
+          </div>
+        );
+
       case 'documents':
         return (
           <div className="tab-content">
@@ -440,44 +574,181 @@ const MonProfil = () => {
   };
 
   return (
-    <section className="mon-profil-section py-5">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-3">
-            {/* Sidebar navigation */}
-            <div className="profile-sidebar">
-              <div className="profile-summary">
-                <div className="profile-avatar-small">
-                  <img src={userData.photo} alt="Photo de profil" />
+    <>
+      <style jsx>{`
+        .permutation-card {
+          background: white;
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          border-left: 4px solid #f97316;
+          transition: all 0.3s ease;
+        }
+
+        .permutation-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .permutation-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 1.5rem;
+        }
+
+        .permutation-niveau {
+          font-size: 1.25rem;
+          font-weight: bold;
+          color: #1f2937;
+          margin-bottom: 0.25rem;
+        }
+
+        .permutation-filiere {
+          color: #6b7280;
+          margin: 0;
+          font-size: 0.875rem;
+        }
+
+        .permutation-path {
+          margin-bottom: 1.5rem;
+        }
+
+        .path-item {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: 1rem;
+        }
+
+        .path-dot {
+          width: 12px;
+          height: 12px;
+          background: #f97316;
+          border-radius: 50%;
+          margin-top: 0.5rem;
+          margin-right: 1rem;
+          flex-shrink: 0;
+        }
+
+        .path-content {
+          flex: 1;
+        }
+
+        .path-label {
+          font-size: 0.875rem;
+          color: #6b7280;
+          margin-bottom: 0.25rem;
+        }
+
+        .path-value {
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.25rem;
+        }
+
+        .path-location {
+          font-size: 0.75rem;
+          color: #9ca3af;
+        }
+
+        .path-arrow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0.5rem 0;
+          color: #f97316;
+        }
+
+        .permutation-meta {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+
+        .permutation-motif {
+          background: #f9fafb;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          margin-bottom: 1.5rem;
+          font-size: 0.875rem;
+          line-height: 1.5;
+        }
+
+        .permutation-actions {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .empty-state {
+          background: #f9fafb;
+          border-radius: 0.75rem;
+          border: 2px dashed #d1d5db;
+        }
+
+        @media (max-width: 768px) {
+          .permutation-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+
+          .permutation-actions {
+            flex-direction: column;
+          }
+
+          .permutation-actions .btn {
+            width: 100%;
+          }
+        }
+      `}</style>
+
+      <section className="mon-profil-section py-5">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-3">
+              {/* Sidebar navigation */}
+              <div className="profile-sidebar">
+                <div className="profile-summary">
+                  <div className="profile-avatar-small">
+                    <img src={userData.photo} alt="Photo de profil" />
+                  </div>
+                  <div className="profile-info-small">
+                    <h5>{userData.prenom} {userData.nom}</h5>
+                    <p className="text-muted">{userData.email}</p>
+                  </div>
                 </div>
-                <div className="profile-info-small">
-                  <h5>{userData.prenom} {userData.nom}</h5>
-                  <p className="text-muted">{userData.email}</p>
-                </div>
+                <nav className="profile-nav">
+                  {tabs.map(tab => (
+                    <button
+                      key={tab.id}
+                      className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      <i className={tab.icon}></i>
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
+                </nav>
               </div>
-              <nav className="profile-nav">
-                {tabs.map(tab => (
-                  <button
-                    key={tab.id}
-                    className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    <i className={tab.icon}></i>
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
-              </nav>
             </div>
-          </div>
-          <div className="col-lg-9">
-            {/* Main content */}
-            <div className="profile-content">
-              {renderTabContent()}
+            <div className="col-lg-9">
+              {/* Main content */}
+              <div className="profile-content">
+                {renderTabContent()}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

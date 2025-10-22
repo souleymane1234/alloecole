@@ -1,27 +1,19 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import $ from "jquery";
 import { usePathname } from "next/navigation";
 
 const HeaderOne = () => {
   let pathname = usePathname();
   const [scroll, setScroll] = useState(false);
   const [isMenuActive, setIsMenuActive] = useState(false);
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("select2").then(() => {
-        const selectElement = $(".js-example-basic-single");
-        if (selectElement.length > 0) {
-          selectElement.select2(); // Initialize Select2
-        }
-      });
-    }
+  const [searchActive, setSearchActive] = useState(false);
 
+  useEffect(() => {
     window.onscroll = () => {
-      if (window.pageYOffset < 150) {
+      if (window.pageYOffset < 10) {
         setScroll(false);
-      } else if (window.pageYOffset > 150) {
+      } else if (window.pageYOffset > 10) {
         setScroll(true);
       }
       return () => (window.onscroll = null);
@@ -43,178 +35,525 @@ const HeaderOne = () => {
   };
 
   const [activeSubmenu, setActiveSubmenu] = useState(null);
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 0
-  );
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const handleSubmenuClick = (index) => {
-    if (windowWidth < 992) {
-      setActiveSubmenu((prevIndex) => (prevIndex === index ? null : index));
-    }
+    setActiveSubmenu((prevIndex) => (prevIndex === index ? null : index));
   };
 
   const menuItems = [
-    { href: "/", label: "Accueil" },
+    { 
+      href: "/", 
+      label: "Accueil",
+      icon: "ph-house"
+    },
     {
       label: "Études",
+      icon: "ph-graduation-cap",
       links: [
-        { href: "/course", label: "Bourses d'étude" },
+        { href: "/bourses", label: "Bourses d'étude" },
         { href: "/etudes-etranger", label: "Études à l'étranger" },
-        { href: "/course-details", label: "Permutations" },
+        { href: "/permutations", label: "Permutations" },
       ],
     },
-    { href: "/mon-profil", label: "Mon Profil" },
+    // { 
+    //   href: "/mon-profil", 
+    //   label: "Mon Profil",
+    //   icon: "ph-user"
+    // },
     {
       label: "Orientation",
+      icon: "ph-compass",
       links: [
-        { href: "/about", label: "Conseils pratiques" },
-        { href: "/about-two", label: "Simulateur d'orientation" },
+        { href: "/conseils", label: "Conseils pratiques" },
+        { href: "/simulateur", label: "Simulateur d'orientation" },
       ],
     },
-    { href: "/contact", label: "Écoles" },
+    { 
+      href: "/ecoles", 
+      label: "Écoles",
+      icon: "ph-buildings"
+    },
+    { 
+      href: "/webtv", 
+      label: "WebTV",
+      icon: "ph-television"
+    },
   ];
 
   return (
     <>
-      <div className={`side-overlay ${isMenuActive ? "show" : ""}`}></div>
-      <header className={`header ${scroll ? "fixed-header" : ""}`}>
-        <div className='container container--xl'>
-          <nav className='header-inner flex-between gap-8'>
-            <div className='header-content-wrapper flex-align flex-grow-1'>
-              {/* Logo Start */}
-              <div className='logo'>
-                <Link href='/' className='link'>
-                  <img src='assets/images/logo/logo.png' alt='Logo' />
-                </Link>
-              </div>
-              {/* Logo End  */}
-              {/* Menu Start  */}
-              <div className='header-menu d-lg-block d-none'>
-                <ul className='nav-menu flex-align'>
-                  {menuItems.map((item, index) =>
-                    item.links ? (
-                      <li
-                        key={`menu-item-${index}`}
-                        className='nav-menu__item has-submenu'
-                      >
-                        <Link href='#' className='nav-menu__link'>
-                          {item.label}
-                        </Link>
-                        <ul className={`nav-submenu scroll-sm`}>
-                          {item.links.map((link, linkIndex) => (
-                            <li
-                              key={`submenu-item-${linkIndex}`}
-                              className={`nav-submenu__item ${
-                                pathname == link.href && "activePage"
-                              }`}
-                            >
-                              <Link
-                                href={link.href}
-                                className='nav-submenu__link hover-bg-neutral-30'
-                              >
-                                {link.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </li>
-                    ) : (
-                      <li
-                        key={`menu-contact-${index}`}
-                        className={`nav-menu__item ${
-                          pathname == item.href && "activePage"
-                        }`}
-                      >
-                        <Link href={item.href} className='nav-menu__link'>
-                          {item.label}
-                        </Link>
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-              {/* Menu End  */}
-            </div>
-            {/* Header Right start */}
-            <div className='header-right flex-align'>
-              <Link
-                href='sign-in'
-                className='info-action w-52 h-52 bg-main-25 hover-bg-main-600 border border-neutral-30 rounded-circle flex-center text-2xl text-neutral-500 hover-text-white hover-border-main-600'
-              >
-                <i className='ph ph-user-circle' />
+      <style jsx global>{`
+        /* Header LinkedIn Style */
+        .header-linkedin {
+          background: #fff;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          transition: box-shadow 0.2s ease;
+        }
+
+        .header-linkedin.scrolled {
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 
+                      0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-container {
+          max-width: 1128px;
+          margin: 0 auto;
+          padding: 0 24px;
+        }
+
+        .header-content {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 52px;
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex: 1;
+        }
+
+        .header-logo {
+          display: flex;
+          align-items: center;
+          margin-right: 8px;
+        }
+
+        .header-logo img {
+          height: 34px;
+          width: auto;
+        }
+
+        .header-search {
+          position: relative;
+          max-width: 280px;
+          flex: 1;
+        }
+
+        .header-search input {
+          width: 100%;
+          height: 34px;
+          padding: 0 8px 0 38px;
+          border: none;
+          background: #eef3f8;
+          border-radius: 4px;
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.9);
+          transition: background 0.2s ease;
+        }
+
+        .header-search input:focus {
+          background: #e0e7ed;
+          outline: none;
+        }
+
+        .header-search input::placeholder {
+          color: rgba(0, 0, 0, 0.6);
+        }
+
+        .search-icon {
+          position: absolute;
+          left: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: rgba(0, 0, 0, 0.6);
+          font-size: 16px;
+          pointer-events: none;
+        }
+
+        .header-nav {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex: 1;
+          justify-content: flex-end;
+        }
+
+        .nav-item {
+          position: relative;
+        }
+
+        .nav-link {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 0 12px;
+          height: 52px;
+          justify-content: center;
+          text-decoration: none;
+          color: rgba(0, 0, 0, 0.6);
+          transition: color 0.2s ease;
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+          min-width: 100px;
+        }
+
+        .nav-link:hover {
+          color: rgba(0, 0, 0, 0.9);
+        }
+
+        .nav-link.active {
+          color: rgba(0, 0, 0, 0.9);
+          border-bottom-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .nav-icon {
+          font-size: 20px;
+          margin-bottom: 2px;
+        }
+
+        .nav-label {
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 1;
+        }
+
+        .nav-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08),
+                      0 2px 8px rgba(0, 0, 0, 0.15);
+          padding: 8px 0;
+          min-width: 200px;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s ease;
+          margin-top: 8px;
+        }
+
+        .nav-item:hover .nav-dropdown {
+          opacity: 1;
+          visibility: visible;
+          margin-top: 0;
+        }
+
+        .dropdown-item {
+          display: block;
+          padding: 12px 16px;
+          color: rgba(0, 0, 0, 0.9);
+          text-decoration: none;
+          font-size: 14px;
+          transition: background 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+          background: rgba(0, 0, 0, 0.08);
+        }
+
+        .header-divider {
+          width: 1px;
+          height: 40px;
+          background: rgba(0, 0, 0, 0.08);
+          margin: 0 4px;
+        }
+
+        .mobile-toggle {
+          display: none;
+          background: none;
+          border: none;
+          font-size: 24px;
+          color: rgba(0, 0, 0, 0.6);
+          cursor: pointer;
+          padding: 8px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: white;
+          z-index: 2000;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+          transform: translateX(0);
+        }
+
+        .mobile-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 24px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .mobile-logo img {
+          height: 28px;
+        }
+
+        .close-button {
+          background: none;
+          border: none;
+          font-size: 24px;
+          color: rgba(0, 0, 0, 0.6);
+          cursor: pointer;
+          padding: 8px;
+        }
+
+        .mobile-nav {
+          padding: 16px 0;
+        }
+
+        .mobile-nav-item {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .mobile-nav-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 24px;
+          color: rgba(0, 0, 0, 0.9);
+          text-decoration: none;
+          font-size: 16px;
+          font-weight: 500;
+        }
+
+        .mobile-nav-icon {
+          font-size: 20px;
+          margin-right: 12px;
+        }
+
+        .mobile-submenu {
+          background: #f3f2f0;
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+        }
+
+        .mobile-nav-item.active .mobile-submenu {
+          max-height: 500px;
+        }
+
+        .mobile-submenu-item {
+          display: block;
+          padding: 12px 24px 12px 56px;
+          color: rgba(0, 0, 0, 0.6);
+          text-decoration: none;
+          font-size: 14px;
+        }
+
+        .mobile-submenu-item:hover {
+          color: rgba(0, 0, 0, 0.9);
+          background: rgba(0, 0, 0, 0.04);
+        }
+
+        .chevron-icon {
+          font-size: 16px;
+          transition: transform 0.3s ease;
+        }
+
+        .mobile-nav-item.active .chevron-icon {
+          transform: rotate(180deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+          .header-search {
+            max-width: 200px;
+          }
+
+          .nav-link {
+            min-width: 70px;
+            padding: 0 8px;
+          }
+
+          .nav-label {
+            font-size: 11px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .header-container {
+            padding: 0 16px;
+          }
+
+          .header-search {
+            display: none;
+          }
+
+          .header-nav {
+            display: none;
+          }
+
+          .mobile-toggle {
+            display: block;
+          }
+        }
+
+        /* Orange Accent for AlloEcole */
+        .nav-link.active {
+          border-bottom-color: #f05623;
+        }
+
+        .nav-link:hover {
+          color: #f05623;
+        }
+      `}</style>
+
+      <header className={`header-linkedin ${scroll ? 'scrolled' : ''}`}>
+        <div className='header-container'>
+          <div className='header-content'>
+            {/* Left Section */}
+            <div className='header-left'>
+              <Link href='/' className='header-logo'>
+                <img src='assets/images/logo/logo.png' alt='AlloEcole' />
               </Link>
-              <button
-                type='button'
-                className='toggle-mobileMenu d-lg-none text-neutral-200 flex-center'
-                onClick={toggleMenu}
-              >
-                <i className='ph ph-list' />
-              </button>
+
+              <div className='header-search'>
+                <i className='ph ph-magnifying-glass search-icon' />
+                <input 
+                  type='text' 
+                  placeholder='Rechercher' 
+                />
+              </div>
             </div>
-            {/* Header Right End  */}
-          </nav>
+
+            {/* Navigation Desktop */}
+            <nav className='header-nav'>
+              {menuItems.map((item, index) =>
+                item.links ? (
+                  <div key={`nav-${index}`} className='nav-item'>
+                    <div className={`nav-link ${pathname.includes(item.links[0].href.split('/')[1]) ? 'active' : ''}`}>
+                      <i className={`ph-bold ${item.icon} nav-icon`} />
+                      <span className='nav-label'>{item.label}</span>
+                    </div>
+                    <div className='nav-dropdown'>
+                      {item.links.map((link, linkIndex) => (
+                        <Link
+                          key={`dropdown-${linkIndex}`}
+                          href={link.href}
+                          className='dropdown-item'
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={`nav-${index}`}
+                    href={item.href}
+                    className={`nav-link ${pathname === item.href ? 'active' : ''}`}
+                  >
+                    <i className={`ph-bold ${item.icon} nav-icon`} />
+                    <span className='nav-label'>{item.label}</span>
+                  </Link>
+                )
+              )}
+
+              <div className='header-divider' />
+
+              <Link href='/notifications' className='nav-link'>
+                <i className='ph-bold ph-bell nav-icon' />
+                <span className='nav-label'>Notifications</span>
+              </Link>
+
+              <Link href='/mon-profil' className='nav-link'>
+                <i className='ph-bold ph-user-circle nav-icon' />
+                <span className='nav-label'>Vous</span>
+              </Link>
+            </nav>
+
+            {/* Mobile Toggle */}
+            <button 
+              type='button' 
+              className='mobile-toggle'
+              onClick={toggleMenu}
+            >
+              <i className='ph-bold ph-list' />
+            </button>
+          </div>
         </div>
       </header>
 
-      <div
-        className={`mobile-menu scroll-sm d-lg-none d-block ${
-          isMenuActive ? "active" : ""
-        }`}
-      >
-        <button type='button' className='close-button' onClick={closeMenu}>
-          <i className='ph ph-x' />{" "}
-        </button>
-        <div className='mobile-menu__inner'>
-          <Link href='/' className='mobile-menu__logo'>
-            <img src='assets/images/logo/logo.png' alt='Logo' />
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${isMenuActive ? 'active' : ''}`}>
+        <div className='mobile-header'>
+          <Link href='/' className='mobile-logo' onClick={closeMenu}>
+            <img src='assets/images/logo/logo.png' alt='AlloEcole' />
           </Link>
-          <div className='mobile-menu__menu'>
-            <ul className='nav-menu flex-align nav-menu--mobile'>
-              {menuItems.map((item, index) =>
-                item.links ? (
-                  <li
-                    key={`menu-item-${index}`}
-                    className={`nav-menu__item has-submenu ${
-                      activeSubmenu === index ? "activePage" : ""
-                    }`}
-                    onClick={() => handleSubmenuClick(index)}
-                  >
-                    <Link href='#' className='nav-menu__link'>
-                      {item.label}
+          <button type='button' className='close-button' onClick={closeMenu}>
+            <i className='ph-bold ph-x' />
+          </button>
+        </div>
+
+        <div className='mobile-nav'>
+          {menuItems.map((item, index) =>
+            item.links ? (
+              <div 
+                key={`mobile-${index}`} 
+                className={`mobile-nav-item ${activeSubmenu === index ? 'active' : ''}`}
+              >
+                <div 
+                  className='mobile-nav-link'
+                  onClick={() => handleSubmenuClick(index)}
+                >
+                  <div>
+                    <i className={`ph-bold ${item.icon} mobile-nav-icon`} />
+                    {item.label}
+                  </div>
+                  <i className='ph-bold ph-caret-down chevron-icon' />
+                </div>
+                <div className='mobile-submenu'>
+                  {item.links.map((link, linkIndex) => (
+                    <Link
+                      key={`mobile-sub-${linkIndex}`}
+                      href={link.href}
+                      className='mobile-submenu-item'
+                      onClick={closeMenu}
+                    >
+                      {link.label}
                     </Link>
-                    <ul className={`nav-submenu scroll-sm`}>
-                      {item.links.map((link, linkIndex) => (
-                        <li key={linkIndex} className='nav-submenu__item'>
-                          <Link
-                            href={link.href}
-                            className='nav-submenu__link hover-bg-neutral-30'
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ) : (
-                  <li
-                    className={`nav-menu__item ${
-                      pathname == item.href && "activePage"
-                    }`}
-                    key={index}
-                  >
-                    <Link href={item.href} className='nav-menu__link'>
-                      {item.label}
-                    </Link>
-                  </li>
-                )
-              )}
-            </ul>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Link
+                key={`mobile-${index}`}
+                href={item.href}
+                className='mobile-nav-link'
+                onClick={closeMenu}
+              >
+                <div>
+                  <i className={`ph-bold ${item.icon} mobile-nav-icon`} />
+                  {item.label}
+                </div>
+              </Link>
+            )
+          )}
+
+          <div className='mobile-nav-item'>
+            <Link href='/notifications' className='mobile-nav-link' onClick={closeMenu}>
+              <div>
+                <i className='ph-bold ph-bell mobile-nav-icon' />
+                Notifications
+              </div>
+            </Link>
+          </div>
+
+          <div className='mobile-nav-item'>
+            <Link href='/sign-in' className='mobile-nav-link' onClick={closeMenu}>
+              <div>
+                <i className='ph-bold ph-user-circle mobile-nav-icon' />
+                Connexion
+              </div>
+            </Link>
           </div>
         </div>
       </div>

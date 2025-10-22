@@ -1,7 +1,28 @@
-import React from 'react';
-import { Calendar, Clock, MapPin, ArrowRight, ChevronRight } from 'lucide-react';
+"use client";
+import React, { useState } from 'react';
+import { Calendar, Clock, MapPin, ArrowRight, ChevronRight, Eye, User, BookOpen, GraduationCap, Settings, Bell, LogIn } from 'lucide-react';
+import ContactAlloEcoleService from './ContactAlloEcoleService';
 
 const AlloEcoleNewsFeed = () => {
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedPermutation, setSelectedPermutation] = useState(null);
+  const [isUserConnected, setIsUserConnected] = useState(true); 
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détection de la taille d'écran au chargement et au redimensionnement
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
   const actualites = [
     {
       id: 1,
@@ -44,11 +65,21 @@ const AlloEcoleNewsFeed = () => {
       id: 5,
       type: "permutation",
       niveau: "BTS 1",
-      annee: "2018-2019",
+      filiere: "Génie Informatique",
+      annee: "2024-2025",
       origine: "Grande école ASTC",
+      villeOrigine: "Abidjan",
       souhait: "Université de Amérique",
+      villeSouhaitee: "Abidjan",
       status: "En cours",
-      date: "15/10/2025"
+      date: "15/10/2025",
+      user: {
+        nom: "Kouassi",
+        prenom: "Jean",
+        ville: "Abidjan"
+      },
+      vues: 45,
+      correspondances: 3
     },
     {
       id: 6,
@@ -81,12 +112,22 @@ const AlloEcoleNewsFeed = () => {
     {
       id: 9,
       type: "permutation",
-      niveau: "Master",
-      annee: "2019-2020",
-      origine: "Université Félix Houfouet Boigny",
+      niveau: "Master 1",
+      filiere: "Commerce",
+      annee: "2024-2025",
+      origine: "Université Félix Houphouët Boigny",
+      villeOrigine: "Abidjan",
       souhait: "Université de Strasbourg",
+      villeSouhaitee: "Strasbourg, France",
       status: "En cours",
-      date: "12/10/2025"
+      date: "12/10/2025",
+      user: {
+        nom: "Traoré",
+        prenom: "Fatou",
+        ville: "Bouaké"
+      },
+      vues: 78,
+      correspondances: 1
     },
     {
       id: 10,
@@ -119,12 +160,22 @@ const AlloEcoleNewsFeed = () => {
     {
       id: 13,
       type: "permutation",
-      niveau: "Licence professionnelle génie informatique",
-      annee: "2018-2019",
+      niveau: "Licence 3",
+      filiere: "Génie Civil",
+      annee: "2024-2025",
       origine: "LEGACY INSTITUT",
+      villeOrigine: "Abidjan",
       souhait: "Campus France",
+      villeSouhaitee: "Paris, France",
       status: "En cours",
-      date: "10/10/2025"
+      date: "10/10/2025",
+      user: {
+        nom: "Koné",
+        prenom: "Moussa",
+        ville: "Yamoussoukro"
+      },
+      vues: 92,
+      correspondances: 2
     },
     {
       id: 14,
@@ -146,6 +197,210 @@ const AlloEcoleNewsFeed = () => {
     }
   ];
 
+  const userData = {
+    nom: 'Albert',
+    prenom: 'Kala',
+    email: 'albert.kala@email.com',
+    photo: '/assets/images/poster/albert.jpg',
+    dossiers: 2,
+    bourses: 3,
+    permutations: 2
+  };
+
+  const UserProfileSidebar = () => (
+    <div className="profile-sidebar">
+      {isUserConnected ? (
+        <>
+          <div className="profile-header">
+            <div className="profile-avatar">
+              <img src={userData.photo} alt="Photo de profil" />
+              <div className="online-indicator"></div>
+            </div>
+            <div className="profile-info">
+              <h4 className="profile-name">{userData.prenom} {userData.nom}</h4>
+              <p className="profile-email">{userData.email}</p>
+            </div>
+          </div>
+          
+          <div className="profile-stats">
+            <div className="stat-item">
+              <div className="stat-number">{userData.dossiers}</div>
+              <div className="stat-label">Dossiers</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{userData.bourses}</div>
+              <div className="stat-label">Bourses</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{userData.permutations}</div>
+              <div className="stat-label">Permutations</div>
+            </div>
+          </div>
+
+          <div className="profile-quick-actions">
+            <button className="quick-action-btn">
+              <User className="icon-sm" />
+              <span>Mon Profil</span>
+            </button>
+            <button className="quick-action-btn">
+              <BookOpen className="icon-sm" />
+              <span>Mes Dossiers</span>
+            </button>
+            <button className="quick-action-btn">
+              <GraduationCap className="icon-sm" />
+              <span>Mes Bourses</span>
+            </button>
+            <button className="quick-action-btn">
+              <Settings className="icon-sm" />
+              <span>Paramètres</span>
+            </button>
+          </div>
+
+          <div className="profile-notifications">
+            <div className="notification-header">
+              <Bell className="icon-sm" />
+              <span>Notifications récentes</span>
+            </div>
+            <div className="notification-item">
+              <div className="notification-dot"></div>
+              <span>Nouvelle bourse disponible</span>
+            </div>
+            <div className="notification-item">
+              <div className="notification-dot"></div>
+              <span>Mise à jour de votre dossier</span>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="guest-profile">
+          <div className="guest-header">
+            <User className="icon-lg" />
+            <h4>Rejoignez-nous</h4>
+            <p>Connectez-vous pour accéder à toutes les fonctionnalités</p>
+          </div>
+          
+          <div className="guest-actions">
+            <button className="btn-primary full-width">
+              <LogIn className="icon-sm" />
+              Se connecter
+            </button>
+            <button className="btn-secondary full-width">
+              S'inscrire
+            </button>
+          </div>
+
+          <div className="guest-benefits">
+            <h5>Avantages de s'inscrire :</h5>
+            <ul>
+              <li>✓ Sauvegarder vos recherches</li>
+              <li>✓ Postuler aux bourses</li>
+              <li>✓ Gérer vos dossiers</li>
+              <li>✓ Recevoir des alertes</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const RightSidebar = () => (
+    <div className="sidebar-right-content">
+      {/* Section Écoles recommandées */}
+      <div className="sidebar-section">
+        <h3 className="sidebar-title">Écoles recommandées</h3>
+        <div className="school-ad">
+          <div className="ad-image">
+            <img src="/assets/images/poster/ecole.png" alt="École recommandée" />
+          </div>
+          <div className="ad-content">
+            <h5>COLLÈGE PRIVÉ EXCELLENCE</h5>
+            <p>Abidjan, Plateau</p>
+            <button className="btn-ad">Découvrir</button>
+          </div>
+        </div>
+        
+        <div className="school-ad">
+          <div className="ad-image">
+            <img src="/assets/images/poster/ecole.png" alt="École recommandée" />
+          </div>
+          <div className="ad-content">
+            <h5>INSTITUT MODERNE</h5>
+            <p>Yopougon</p>
+            <button className="btn-ad">Visiter</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Section Actions rapides */}
+      <div className="sidebar-section">
+        <h3 className="sidebar-title">Actions rapides</h3>
+        <div className="quick-actions-grid">
+          <button className="action-card">
+            <GraduationCap className="icon-md" />
+            <span>Postuler à une bourse</span>
+          </button>
+          <button className="action-card">
+            <BookOpen className="icon-md" />
+            <span>Créer un dossier</span>
+          </button>
+          <button className="action-card">
+            <User className="icon-md" />
+            <span>Demande de permutation</span>
+          </button>
+          <button className="action-card">
+            <Settings className="icon-md" />
+            <span>Contacter le support</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Section Statistiques */}
+      <div className="sidebar-section">
+        <h3 className="sidebar-title">Statistiques</h3>
+        <div className="stats-cards">
+          <div className="stat-card">
+            <div className="stat-number">1,247</div>
+            <div className="stat-label">Écoles</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">89</div>
+            <div className="stat-label">Bourses actives</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">456</div>
+            <div className="stat-label">Permutations</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section Événements à venir */}
+      <div className="sidebar-section">
+        <h3 className="sidebar-title">Événements à venir</h3>
+        <div className="event-item">
+          <div className="event-date">
+            <span className="event-day">15</span>
+            <span className="event-month">NOV</span>
+          </div>
+          <div className="event-details">
+            <h6>Salon de l'orientation</h6>
+            <p>Abidjan, Plateaux</p>
+          </div>
+        </div>
+        <div className="event-item">
+          <div className="event-date">
+            <span className="event-day">20</span>
+            <span className="event-month">NOV</span>
+          </div>
+          <div className="event-details">
+            <h6>Journée portes ouvertes</h6>
+            <p>Université de Cocody</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Les fonctions render... restent inchangées
   const renderActualiteCard = (item) => (
     <div className="card" key={item.id}>
       <img src={item.image} alt={item.title} className="card-image" />
@@ -219,13 +474,26 @@ const AlloEcoleNewsFeed = () => {
           <span className="badge badge-orange">Permutation</span>
           <span className="badge badge-purple">{item.status}</span>
         </div>
-        <h3 className="card-title">{item.niveau}</h3>
+        <div className="permutation-user-info">
+          <div className="user-avatar">
+            {item.user.prenom[0]}{item.user.nom[0]}
+          </div>
+          <div className="user-details">
+            <h4 className="user-name">{item.user.prenom} {item.user.nom}</h4>
+            <p className="user-location">
+              <MapPin className="icon-sm" />
+              {item.user.ville}
+            </p>
+          </div>
+        </div>
+        <h3 className="card-title">{item.niveau} - {item.filiere}</h3>
         <div className="permutation-path">
           <div className="path-item">
             <div className="path-dot"></div>
             <div>
               <p className="path-label">École d'origine</p>
               <p className="path-value">{item.origine}</p>
+              <p className="path-location">{item.villeOrigine}</p>
             </div>
           </div>
           <div className="path-arrow">
@@ -236,14 +504,39 @@ const AlloEcoleNewsFeed = () => {
             <div>
               <p className="path-label">École souhaitée</p>
               <p className="path-value">{item.souhait}</p>
+              <p className="path-location">{item.villeSouhaitee}</p>
             </div>
           </div>
         </div>
-        <div className="year-info">
-          <Calendar className="icon-sm icon-orange" />
-          <span>Année académique: {item.annee}</span>
+        <div className="permutation-meta">
+          <div className="year-info">
+            <Calendar className="icon-sm icon-orange" />
+            <span>Année: {item.annee}</span>
+          </div>
+          <div className="permutation-stats">
+            <div className="stat-item">
+              <Eye className="icon-sm" />
+              <span>{item.vues} vues</span>
+            </div>
+            <div className="stat-item">
+              <span className="correspondances-badge">
+                {item.correspondances} correspondance{item.correspondances > 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
         </div>
-        <button className="button-primary">Voir les détails de la permutation</button>
+        <div className="permutation-actions">
+          <button 
+            className="button-primary"
+            onClick={() => {
+              setSelectedPermutation(item);
+              setShowContactModal(true);
+            }}
+          >
+            Contacter
+          </button>
+          <button className="button-secondary">Voir détails</button>
+        </div>
       </div>
     </div>
   );
@@ -266,31 +559,12 @@ const AlloEcoleNewsFeed = () => {
           margin: 0 auto;
         }
 
-        .header {
-          text-align: center;
-          margin-bottom: 3rem;
-        }
-
-        .main-title {
-          font-size: 2.5rem;
-          font-weight: bold;
-          color: #1f2937;
-          margin-bottom: 1rem;
-        }
-
-        .title-accent {
-          color: #f97316;
-        }
-
-        .subtitle {
-          font-size: 1.25rem;
-          color: #6b7280;
-        }
-
+        /* Layout principal - Desktop */
         .main-layout {
           display: flex;
           gap: 2rem;
           align-items: flex-start;
+          width: 100%;
         }
 
         .sidebar {
@@ -298,83 +572,488 @@ const AlloEcoleNewsFeed = () => {
           border-radius: 0.5rem;
           padding: 1.5rem;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          position: sticky;
-          top: 2rem;
         }
 
+        /* Desktop: sidebar sticky */
         .sidebar-left {
-          width: 280px;
-          flex-shrink: 0;
+          width: 320px;
+          flex-shrink: 0; /* IMPORTANT: empêche le rétrécissement */
+          position: sticky;
+          top: 2rem;
+          height: fit-content;
         }
 
         .sidebar-right {
-          width: 280px;
-          flex-shrink: 0;
-        }
-
-        .sidebar-title {
-          font-size: 1.25rem;
-          font-weight: bold;
-          color: #1f2937;
-          margin-bottom: 1.5rem;
-          padding-bottom: 0.75rem;
-          border-bottom: 2px solid #f97316;
-        }
-
-        .sidebar-item {
-          padding: 0.75rem;
-          margin-bottom: 0.5rem;
-          border-radius: 0.375rem;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .sidebar-item:hover {
-          background-color: #fff7ed;
-        }
-
-        .sidebar-link {
-          display: block;
-          color: #4b5563;
-          text-decoration: none;
-          font-size: 0.875rem;
-          line-height: 1.5;
-        }
-
-        .sidebar-link:hover {
-          color: #f97316;
+          width: 300px;
+          flex-shrink: 0; /* IMPORTANT: empêche le rétrécissement */
+          position: sticky;
+          top: 2rem;
+          height: fit-content;
         }
 
         .content-area {
           flex: 1;
-          min-width: 0;
+          min-width: 0; /* IMPORTANT: permet au contenu de se réduire correctement */
         }
 
+        /* MOBILE FIRST APPROACH */
+        @media (max-width: 991px) {
+          .main-layout {
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+
+          /* Sur mobile: sidebar prend toute la largeur et vient en premier */
+          .sidebar-left {
+            width: 100% !important;
+            margin-left: 100%;
+            margin-right: 100%;
+            left: 0;
+            right: 0;
+            marggin:0;
+            position: relative;
+            top: 0;
+            order: 1; /* Premier élément */
+            /* RETIRER le background-color: red; */
+          }
+
+          .sidebar-right {
+            width: 100% !important;
+            margin-left: 100%;
+            margin-right: 100%;
+            left: 0;
+            right: 0;
+            marggin:0;
+            position: relative;
+            top: 0;
+            order: 3; /* Premier élément */ 
+            /* RETIRER le background-color: red; */
+          }
+
+          .content-area {
+            order: 2; /* Deuxième élément */
+            width: 100%;
+          }
+
+
+          .section {
+            padding: 1.5rem 1rem;
+          }
+        }
+
+        /* Desktop uniquement */
+        @media (min-width: 992px) {
+          .sidebar-right {
+            display: block;
+          }
+          
+          .main-layout {
+            display: flex;
+            flex-direction: row;
+          }
+        }
+
+        /* Styles pour le profil utilisateur */
+        .profile-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .profile-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+        .profile-avatar {
+          position: relative;
+        }
+
+        .profile-avatar img {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 3px solid #f97316;
+        }
+
+        .online-indicator {
+          position: absolute;
+          bottom: 2px;
+          right: 2px;
+          width: 12px;
+          height: 12px;
+          background: #10b981;
+          border: 2px solid white;
+          border-radius: 50%;
+        }
+
+        .profile-info {
+          flex: 1;
+        }
+
+        .profile-name {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.25rem;
+        }
+
+        .profile-email {
+          font-size: 0.875rem;
+          color: #6b7280;
+          margin: 0;
+        }
+
+        .profile-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+          background: #f8fafc;
+          padding: 1rem;
+          border-radius: 0.5rem;
+        }
+
+        .stat-item {
+          text-align: center;
+        }
+
+        .stat-number {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #f97316;
+        }
+
+        .stat-label {
+          font-size: 0.50rem;
+          color: #6b7280;
+          margin-top: 0.25rem;
+        }
+
+        .profile-quick-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .quick-action-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          color: #4b5563;
+        }
+
+        .quick-action-btn:hover {
+          background: #fff7ed;
+          border-color: #f97316;
+          color: #f97316;
+        }
+
+        .profile-notifications {
+          background: #fef3c7;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          border-left: 4px solid #f59e0b;
+        }
+
+        .notification-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          color: #92400e;
+          margin-bottom: 0.75rem;
+        }
+
+        .notification-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          color: #92400e;
+          margin-bottom: 0.5rem;
+        }
+
+        .notification-dot {
+          width: 6px;
+          height: 6px;
+          background: #f59e0b;
+          border-radius: 50%;
+        }
+
+        /* Styles pour les utilisateurs non connectés */
+        .guest-profile {
+          text-align: center;
+          padding: 1rem 0;
+        }
+
+        .guest-header {
+          margin-bottom: 1.5rem;
+        }
+
+        .guest-header .icon-lg {
+          width: 3rem;
+          height: 3rem;
+          color: #6b7280;
+          margin-bottom: 1rem;
+        }
+
+        .guest-header h4 {
+          color: #1f2937;
+          margin-bottom: 0.5rem;
+        }
+
+        .guest-header p {
+          color: #6b7280;
+          font-size: 0.875rem;
+        }
+
+        .guest-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .btn-primary, .btn-secondary {
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .btn-primary {
+          background: #f97316;
+          color: white;
+          border: none;
+        }
+
+        .btn-primary:hover {
+          background: #ea580c;
+        }
+
+        .btn-secondary {
+          background: white;
+          color: #f97316;
+          border: 2px solid #f97316;
+        }
+
+        .btn-secondary:hover {
+          background: #fff7ed;
+        }
+
+        .full-width {
+          width: 100%;
+        }
+
+        .guest-benefits {
+          text-align: left;
+          background: #f8fafc;
+          padding: 1rem;
+          border-radius: 0.5rem;
+        }
+
+        .guest-benefits h5 {
+          color: #1f2937;
+          margin-bottom: 0.75rem;
+          font-size: 0.875rem;
+        }
+
+        .guest-benefits ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .guest-benefits li {
+          font-size: 0.75rem;
+          color: #6b7280;
+          margin-bottom: 0.5rem;
+        }
+
+        /* Styles pour la sidebar droite */
+        .sidebar-right-content {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        .sidebar-section {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .school-ad {
+          display: flex;
+          gap: 1rem;
+          padding: 1rem;
+          background: #f8fafc;
+          border-radius: 0.5rem;
+          border: 1px solid #e5e7eb;
+        }
+
+        .ad-image {
+          width: 60px;
+          height: 60px;
+          border-radius: 0.5rem;
+          overflow: hidden;
+        }
+
+        .ad-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .ad-content {
+          flex: 1;
+        }
+
+        .ad-content h5 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.25rem;
+        }
+
+        .ad-content p {
+          font-size: 0.75rem;
+          color: #6b7280;
+          margin-bottom: 0.5rem;
+        }
+
+        .btn-ad {
+          padding: 0.25rem 0.75rem;
+          background: #f97316;
+          color: white;
+          border: none;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          cursor: pointer;
+        }
+
+        .quick-actions-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+
+        .action-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 1rem 0.5rem;
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-align: center;
+        }
+
+        .action-card:hover {
+          background: #fff7ed;
+          border-color: #f97316;
+          transform: translateY(-2px);
+        }
+
+        .action-card span {
+          font-size: 0.75rem;
+          color: #4b5563;
+          font-weight: 500;
+        }
+
+        .stats-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .stat-card {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          background: #f8fafc;
+          border-radius: 0.5rem;
+          border-left: 4px solid #f97316;
+        }
+
+        .stat-card .stat-number {
+          font-size: 1.125rem;
+          font-weight: 700;
+          color: #f97316;
+        }
+
+        .stat-card .stat-label {
+          font-size: 0.75rem;
+          color: #6b7280;
+          margin: 0;
+        }
+
+        .event-item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 0.75rem;
+          background: #f8fafc;
+          border-radius: 0.5rem;
+        }
+
+        .event-date {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          background: #f97316;
+          color: white;
+          padding: 0.5rem;
+          border-radius: 0.375rem;
+          min-width: 50px;
+        }
+
+        .event-day {
+          font-size: 1.125rem;
+          font-weight: 700;
+        }
+
+        .event-month {
+          font-size: 0.75rem;
+        }
+
+        .event-details h6 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.25rem;
+        }
+
+        .event-details p {
+          font-size: 0.75rem;
+          color: #6b7280;
+          margin: 0;
+        }
+
+        /* Styles des cartes d'actualités */
         .grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 2rem;
-        }
-
-        @media (max-width: 1199px) {
-          .sidebar-right {
-            display: none;
-          }
-        }
-
-        @media (max-width: 991px) {
-          .main-layout {
-            flex-direction: column;
-          }
-
-          .sidebar-left {
-            width: 100%;
-            position: static;
-          }
-
-          .sidebar-right {
-            display: none;
-          }
         }
 
         .card {
@@ -591,6 +1270,85 @@ const AlloEcoleNewsFeed = () => {
           margin-bottom: 1rem;
         }
 
+        .permutation-user-info {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+        .user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #f97316;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          margin-right: 1rem;
+        }
+
+        .user-name {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.25rem;
+        }
+
+        .user-location {
+          display: flex;
+          align-items: center;
+          color: #6b7280;
+          font-size: 0.875rem;
+          margin: 0;
+        }
+
+        .permutation-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .permutation-stats {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .stat-item {
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+
+        .correspondances-badge {
+          background: #fef3c7;
+          color: #92400e;
+          padding: 0.25rem 0.75rem;
+          border-radius: 9999px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .permutation-actions {
+          display: flex;
+          gap: 0.75rem;
+        }
+
+        .path-location {
+          font-size: 0.75rem;
+          color: #9ca3af;
+          margin-top: 0.25rem;
+        }
+
         .icon-sm {
           width: 1rem;
           height: 1rem;
@@ -635,20 +1393,20 @@ const AlloEcoleNewsFeed = () => {
         }
 
         @media (max-width: 767px) {
-          .main-title {
-            font-size: 1.875rem;
-          }
-
-          .subtitle {
-            font-size: 1rem;
-          }
-
           .card-title {
             font-size: 1.25rem;
           }
 
           .section {
-            padding: 2rem 1rem;
+            padding: 1rem;
+          }
+
+          .profile-stats {
+            grid-template-columns: repeat(3, 1fr);
+          }
+
+          .quick-actions-grid {
+            grid-template-columns: 1fr 1fr;
           }
         }
       `}</style>
@@ -656,51 +1414,13 @@ const AlloEcoleNewsFeed = () => {
       <div className="container">
         <section className="section">
           <div className="max-width">
-            <div className="header">
-              <h2 className="main-title">
-                <span className="title-accent">File d'Actualités</span> AlloEcole
-              </h2>
-              <p className="subtitle">
-                Toutes les informations importantes pour votre parcours éducatif
-              </p>
-            </div>
-
             <div className="main-layout">
-              {/* Sidebar Left */}
+              {/* Sidebar Left - Profil utilisateur */}
               <aside className="sidebar sidebar-left">
-                <h3 className="sidebar-title">Catégories</h3>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">📰 Toutes les actualités</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">🎓 Bourses d'études</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">🏫 Établissements</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">🔄 Permutations</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">📚 Inscriptions</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">🌍 Études à l'étranger</a>
-                </div>
-                
-                <h3 className="sidebar-title" style={{marginTop: '2rem'}}>Filtres</h3>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">Cette semaine</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">Ce mois-ci</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">Plus populaires</a>
-                </div>
+                <UserProfileSidebar />
               </aside>
 
-              {/* Content Area */}
+              {/* Content Area - Actualités */}
               <div className="content-area">
                 <div className="grid">
                   {actualites.map((item) => {
@@ -719,47 +1439,25 @@ const AlloEcoleNewsFeed = () => {
                 </div>
               </div>
 
-              {/* Sidebar Right */}
+              {/* Sidebar Right - Pubs et actions rapides */}
               <aside className="sidebar sidebar-right">
-                <h3 className="sidebar-title">À la une</h3>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">
-                    <strong>Dates limites</strong><br/>
-                    <small style={{color: '#6b7280'}}>5 bourses expirent bientôt</small>
-                  </a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">
-                    <strong>Nouveautés</strong><br/>
-                    <small style={{color: '#6b7280'}}>12 nouvelles écoles ajoutées</small>
-                  </a>
-                </div>
-                
-                <h3 className="sidebar-title" style={{marginTop: '2rem'}}>Liens utiles</h3>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">📝 Guide d'inscription</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">💰 Calculateur de frais</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">📞 Nous contacter</a>
-                </div>
-                <div className="sidebar-item">
-                  <a href="#" className="sidebar-link">❓ FAQ</a>
-                </div>
-
-                <h3 className="sidebar-title" style={{marginTop: '2rem'}}>Statistiques</h3>
-                <div style={{padding: '0.75rem', background: '#fff7ed', borderRadius: '0.375rem', fontSize: '0.875rem'}}>
-                  <p style={{marginBottom: '0.5rem'}}><strong>1,247</strong> écoles</p>
-                  <p style={{marginBottom: '0.5rem'}}><strong>89</strong> bourses actives</p>
-                  <p><strong>456</strong> permutations en cours</p>
-                </div>
+                <RightSidebar />
               </aside>
             </div>
           </div>
         </section>
       </div>
+
+      {/* Modal de contact */}
+      {showContactModal && (
+        <ContactAlloEcoleService
+          permutationId={selectedPermutation?.id}
+          onClose={() => {
+            setShowContactModal(false);
+            setSelectedPermutation(null);
+          }}
+        />
+      )}
     </>
   );
 };

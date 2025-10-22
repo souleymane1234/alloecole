@@ -28,10 +28,10 @@ const page = () => {
       <Animation />
 
       {/* AlloEcole Hero */}
-      <AlloEcoleHero />
+      {/* <AlloEcoleHero /> */}
 
       {/* AlloEcole Services */}
-      <AlloEcoleServices />
+      {/* <AlloEcoleServices /> */}
 
       {/* AlloEcole News Feed */}
       <AlloEcoleNewsFeed />

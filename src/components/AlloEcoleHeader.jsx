@@ -395,7 +395,7 @@ const AlloEcoleHeader = () => {
                       <ul className="submenu">
                         <li><Link href="/bourses">Bourses d'étude</Link></li>
                         <li><Link href="/etudes-etranger">Études à l'étranger</Link></li>
-                        <li><Link href="/permutations">Permutations</Link></li>
+                        <li><Link href="/permutations">Demandes de permutation</Link></li>
                       </ul>
                     </li>
                     <li className="menu-item has-submenu">
@@ -455,7 +455,7 @@ const AlloEcoleHeader = () => {
               <ul className={`mobile-submenu ${activeSubmenu === 'etudes' ? 'active' : ''}`}>
                 <li><Link href="/bourses" onClick={closeMenu}>Bourses d'étude</Link></li>
                 <li><Link href="/etudes-etranger" onClick={closeMenu}>Études à l'étranger</Link></li>
-                <li><Link href="/permutations" onClick={closeMenu}>Permutations</Link></li>
+                <li><Link href="/permutations" onClick={closeMenu}>Demandes de permutation</Link></li>
               </ul>
             </li>
             <li className="mobile-menu-item">
